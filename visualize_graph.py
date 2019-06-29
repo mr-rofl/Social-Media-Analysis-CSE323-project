@@ -1,26 +1,36 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 
-# line = input()
-# v = int(line.split(' ')[0])
-# e = int(line.split(' ')[1])
+def draw(G, pos, measures, weights, measure_name):
+    
+    nodes = nx.draw_networkx_nodes(G, pos, cmap=plt.cm.rainbow, 
+                                   node_color=list(measures.values()),
+                                   nodelist=list(measures.keys()),
+                                   node_size=1000,
+                                   font_size=20, font_color='w')
+    
+    nodes.set_norm(mcolors.SymLogNorm(linthresh=0.01, linscale=1))
+    weights = nx.draw_networkx_edge_labels(G, pos, edge_labels = weights)
+    labels = nx.draw_networkx_labels(G, pos)
+    edges = nx.draw_networkx_edges(G, pos)
+
+    plt.title(measure_name)
+    plt.colorbar(nodes)
+    plt.axis('off')
+    plt.show()
 
 f = open('graph.txt', 'r')
 lines = f.readlines()
-
-line = lines[0].split(' ')
 del lines[0]
 
-v = int(line[0])
-e = int(line[1])
 
 G = nx.Graph()
 
 edge_weights = {}
 
-for i in range(e):
-    # line = input()
-    elements = lines[i].split(' ')
+for line in lines:
+    elements = line.split(' ')
     e1 = int(elements[0])
     e2 = int(elements[1])
     w = int(elements[2])
@@ -29,13 +39,12 @@ for i in range(e):
     
     G.add_edge(e1, e2, weight=w)
 
-closeness_map = nx.closeness_centrality(G, distance='weight')
-closeness = []
+degree = nx.degree_centrality(G)
+closeness = nx.closeness_centrality(G, distance='weight')
+betweenness = nx.betweenness_centrality(G, weight='weight')
 
-for node in sorted(closeness_map):
-    closeness.append(closeness_map[node])
-    
-nx.draw_planar(G, with_labels=True, node_color=closeness, node_size=2000, cmap=plt.cm.Reds, font_size=20, font_color='w')
-nx.draw_networkx_edge_labels(G, pos=nx.planar_layout(G), edge_labels=edge_weights, font_size=10)
-plt.show()
+draw(G, nx.circular_layout(G), degree, edge_weights, "Degree Centrality")
+draw(G, nx.circular_layout(G), closeness, edge_weights, "Closeness Centrality")
+draw(G, nx.circular_layout(G), betweenness, edge_weights, "Betweenness Centrality")
+
 f.close()
