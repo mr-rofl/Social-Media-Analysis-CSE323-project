@@ -1,6 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import os
 
 def draw(G, pos, measures, weights, measure_name):
     
@@ -19,10 +20,10 @@ def draw(G, pos, measures, weights, measure_name):
     plt.colorbar(nodes)
     plt.axis('off')
     plt.show()
-
-f = open('graph.txt', 'r')
+direct='C:/Users/ROFL/Documents/GitHub/Social-Media-Analysis-CSE323-project'
+f = open(direct+'/graph.txt', 'r')
 lines = f.readlines()
-del lines[0]
+
 
 
 G = nx.Graph()
